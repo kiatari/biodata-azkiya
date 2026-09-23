@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro 95 OS - Personal Portfolio</title>
+    <!-- Tailwind CSS for utility support -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for retro pixelated or classic look -->
+    <link href="https://fonts.googleapis.com/css2?family=MS+Mothic&family=VT323&family=Press+Start+2P&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --win-gray: #c0c0c0;
+            --win-dark-gray: #808080;
+            --win-light-gray: #dfdfdf;
+            --win-blue: #000080;
+            --win-blue-highlight: #1084d0;
+            --win-black: #000000;
+        }
+
+        body {
+            background-color: #008080; /* Classic Teal Windows 95 desktop background */
+            font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
+            user-select: none;
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* 3D Bevel Borders for Windows 95 UI */
+        .win95-box {
+            background-color: var(--win-gray);
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid var(--win-dark-gray);
+            border-bottom: 2px solid var(--win-dark-gray);
+            box-shadow: inset 1px 1px 0px var(--win-light-gray), inset -1px -1px 0px var(--win-black);
+        }
+
+        .win95-box-inset {
+            background-color: #ffffff;
+            border-top: 2px solid var(--win-dark-gray);
+            border-left: 2px solid var(--win-dark-gray);
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            box-shadow: inset 1px 1px 0px var(--win-black), inset -1px -1px 0px var(--win-light-gray);
+        }
+
+        .win95-button {
+            background-color: var(--win-gray);
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid var(--win-dark-gray);
+            border-bottom: 2px solid var(--win-dark-gray);
+            padding: 4px 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .win95-button:active {
+            border-top: 2px solid var(--win-dark-gray);
+            border-left: 2px solid var(--win-dark-gray);
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            padding: 5px 11px 3px 13px;
+        }
+
+        /* Window Styling */
+        .window {
+            position: absolute;
+            min-width: 320px;
+            max-width: 90vw;
+            background-color: var(--win-gray);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
+            transition: opacity 0.1s ease;
+        }
+
+        .window-header {
+            background: linear-gradient(90deg, var(--win-blue), var(--win-blue-highlight));
+            color: white;
+            padding: 3px 6px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: grab;
+        }
+
+        .window-header:active {
+            cursor: grabbing;
+        }
+
+        .window-controls button {
+            width: 18px;
+            height: 18px;
+            background-color: var(--win-gray);
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 1px solid var(--win-dark-gray);
+            border-bottom: 1px solid var(--win-dark-gray);
+            font-size: 10px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: black;
+            line-height: 1;
+        }
+
+        .window-controls button:active {
+            border-top: 1px solid var(--win-dark-gray);
+            border-left: 1px solid var(--win-dark-gray);
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+        }
+
+        /* Desktop Grid for Icons */
+        .desktop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 80px);
+            grid-auto-rows: 85px;
+            gap: 15px;
+            padding: 20px;
+            height: calc(100vh - 45px);
+            width: 100vw;
+            align-content: start;
+        }
+
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 4px;
+            border: 1px dotted transparent;
+            text-align: center;
+        }
+
+        .desktop-icon:hover {
+            border: 1px dotted white;
+            background-color: rgba(0, 0, 128, 0.2);
+        }
+
+        .desktop-icon span {
+            color: white;
+            font-size: 11px;
+            margin-top: 4px;
+            text-shadow: 1px 1px 1px black;
+            word-break: break-word;
+            line-height: 1.1;
+        }
+
+        /* Taskbar */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 40px;
+            background-color: var(--win-gray);
+            border-top: 2px solid #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 4px;
+            z-index: 9999;
+        }
+
+        .start-btn {
+            height: 30px;
+            padding: 0 8px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .taskbar-divider {
+            width: 2px;
+            height: 26px;
+            background-color: var(--win-dark-gray);
+            border-right: 1px solid #ffffff;
+            margin: 0 4px;
+        }
+
+        .taskbar-windows {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            flex-grow: 1;
+            padding-left: 4px;
+        }
+
+        .taskbar-tab {
+            background-color: var(--win-gray);
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 2px solid var(--win-dark-gray);
+            border-bottom: 2px solid var(--win-dark-gray);
+            padding: 4px 10px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            max-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .taskbar-tab.active {
+            background: repeating-conic-gradient(#c0c0c0 0% 25%, #dfdfdf 0% 50%);
+            border-top: 2px solid var(--win-dark-gray);
+            border-left: 2px solid var(--win-dark-gray);
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            padding: 5px 9px 3px 11px;
+        }
+
+        .system-tray {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 8px;
+            font-size: 12px;
+            border-top: 1px solid var(--win-dark-gray);
+            border-left: 1px solid var(--win-dark-gray);
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            height: 28px;
+            background-color: var(--win-gray);
+        }
+
+        /* Start Menu Popup */
+        .start-menu {
+            position: fixed;
+            bottom: 42px;
+            left: 2px;
+            width: 220px;
+            background-color: var(--win-gray);
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.4);
+            z-index: 10000;
+            display: none;
+        }
+
+        .start-menu.open {
+            display: block;
+        }
+
+        .start-sidebar {
+            background: linear-gradient(180deg, var(--win-blue), #000040);
+            color: white;
+            width: 26px;
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
+            padding: 10px 4px;
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-align: right;
+        }
+
+        .start-items {
+            flex-grow: 1;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .start-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .start-item:hover {
+            background-color: var(--win-blue);
+            color: white;
+        }
+
+        .start-separator {
+            height: 1px;
+            background-color: var(--win-dark-gray);
+            border-bottom: 1px solid #ffffff;
+            margin: 4px 2px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 16px;
+            height: 16px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--win-gray);
+            box-shadow: inset 1px 1px 0px var(--win-dark-gray);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--win-gray);
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid var(--win-dark-gray);
+            border-bottom: 2px solid var(--win-dark-gray);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="desktop-grid">
+        <!-- About Me Icon -->
+        <div class="desktop-icon" onclick="openWindow('aboutWin')">
+            <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+                <rect width="32" height="32" fill="#C0C0C0" stroke="#000" stroke-width="1"/>
+                <path d="M4 6H28V26H4V6Z" fill="#FFF" stroke="#808080"/>
+                <circle cx="16" cy="12" r="5" fill="#1084d0"/>
+                <path d="M8 23C8 19.5 11.5 18 16 18C20.5 18 24 19.5 24 23" stroke="#1084d0" stroke-width="3"/>
+            </svg>
+            <span>My Profile.exe</span>
+        </div>
+
+        <!-- Skills Icon -->
+        <div class="desktop-icon" onclick="openWindow('skillsWin')">
+            <svg width="36" height="36" viewBox="0 0 32 32">
+                <rect width="32" height="32" fill="#C0C0C0" stroke="#000"/>
+                <path d="M4 8H28V28H4V8Z" fill="#FFFFE0" stroke="#808080"/>
+                <path d="M8 12H24M8 16H20M8 20H24" stroke="#000080" stroke-width="2"/>
+            </svg>
+            <span>Skills.txt</span>
+        </div>
+
+        <!-- Projects Icon -->
+        <div class="desktop-icon" onclick="openWindow('projectsWin')">
+            <svg width="36" height="36" viewBox="0 0 32 32">
+                <rect width="32" height="32" fill="#C0C0C0"/>
+                <path d="M3 8V26H29V8H16L14 6H3Z" fill="#FFC000" stroke="#000"/>
+                <path d="M6 12H26V23H6V12Z" fill="#FFF" stroke="#808080"/>
+            </svg>
+            <span>Projects</span>
+        </div>
+
+        <!-- Notepad Bio Icon -->
+        <div class="desktop-icon" onclick="openWindow('notepadWin')">
+            <svg width="36" height="36" viewBox="0 0 32 32">
+                <rect width="32" height="32" fill="#C0C0C0"/>
+                <path d="M6 4H22L28 10V28H6V4Z" fill="#FFF" stroke="#000"/>
+                <path d="M22 4V10H28" fill="#DFDFDF"/>
+                <path d="M10 12H22M10 16H22M10 20H18" stroke="#808080" stroke-width="1.5"/>
+            </svg>
+            <span>Bio.txt</span>
+        </div>
+
+        <!-- Mini Game Icon -->
+        <div class="desktop-icon" onclick="openWindow('gameWin')">
+            <svg width="36" height="36" viewBox="0 0 32 32">
+                <rect width="32" height="32" fill="#008080" stroke="#000"/>
+                <rect x="4" y="8" width="24" height="16" fill="#C0C0C0" stroke="#FFF"/>
+                <circle cx="10" cy="16" r="3" fill="#000080"/>
+                <rect x="20" y="14" width="3" height="3" fill="#FF0000"/>
+                <rect x="23" y="17" width="3" height="3" fill="#008000"/>
+            </svg>
+            <span>Minesweeper</span>
+        </div>
+
+        <!-- Contact / Guestbook Icon -->
+        <div class="desktop-icon" onclick="openWindow('contactWin')">
+            <svg width="36" height="36" viewBox="0 0 32 32">
+                <rect width="32" height="32" fill="#C0C0C0"/>
+                <rect x="4" y="8" width="24" height="18" fill="#FFF" stroke="#000"/>
+                <path d="M4 10L16 18L28 10" stroke="#000080" stroke-width="2"/>
+            </svg>
+            <span>Contact.exe</span>
+        </div>
+    </div>
+
+    
+    <!-- 1. ABOUT WINDOW -->
+    <div id="aboutWin" class="window" style="top: 50px; left: 80px; width: 450px; z-index: 10;" onmousedown="bringToFront('aboutWin')">
+        <div class="window-header" onmousedown="startDrag(event, 'aboutWin')">
+            <span>👤 About Me - Profile.exe</span>
+            <div class="window-controls">
+                <button onclick="minimizeWindow('aboutWin')">_</button>
+                <button onclick="maximizeWindow('aboutWin')">🗖</button>
+                <button onclick="closeWindow('aboutWin')">X</button>
+            </div>
+        </div>
+        <div class="p-3 bg-[#c0c0c0] flex flex-col gap-3">
+            <div class="win95-box-inset p-4 flex gap-4 items-center">
+                <div class="w-24 h-28 bg-[#808080] border-2 border-black flex items-center justify-center text-white font-bold shrink-0 relative overflow-hidden">
+                    <img src="https://placehold.co/96x112/000080/FFFFFF?text=FOTO" alt="Profile" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col gap-1 text-sm">
+                    <h2 class="font-bold text-base text-[#000080]">Halo, Saya Alex Developer!</h2>
+                    <p><b>Profesi:</b> Frontend Web Enthusiast & Retro UI Designer</p>
+                    <p><b>Lokasi:</b> Bandung, Indonesia</p>
+                    <p class="text-xs text-[#555]">"Suka bernostalgia dengan estetika komputer klasik 90-an dan membangun web interaktif modern."</p>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-xs">Status: Online & Ready to Collaborate</span>
+                <button class="win95-button text-xs" onclick="openWindow('contactWin')">Kirim Pesan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. SKILLS WINDOW -->
+    <div id="skillsWin" class="window" style="top: 90px; left: 160px; width: 400px; z-index: 5; display: none;" onmousedown="bringToFront('skillsWin')">
+        <div class="window-header" onmousedown="startDrag(event, 'skillsWin')">
+            <span>⚙️ Skills & Experience - Skills.txt</span>
+            <div class="window-controls">
+                <button onclick="minimizeWindow('skillsWin')">_</button>
+                <button onclick="maximizeWindow('skillsWin')">🗖</button>
+                <button onclick="closeWindow('skillsWin')">X</button>
+            </div>
+        </div>
+        <div class="p-3 bg-[#c0c0c0] flex flex-col gap-3">
+            <div class="win95-box-inset p-3 bg-white h-52 overflow-y-auto text-sm font-mono">
+                <p class="text-[#000080] font-bold">=== HARD SKILLS ===</p>
+                <p>- HTML5, CSS3, JavaScript (ES6+)</p>
+                <p>- React.js & Tailwind CSS Framework</p>
+                <p>- UI/UX Design & Retro Aesthetics</p>
+                <p>- Git Version Control & Responsive Layouts</p>
+                <br>
+                <p class="text-[#000080] font-bold">=== SOFT SKILLS ===</p>
+                <p>- Problem Solving & Creative Debugging</p>
+                <p>- Team Collaboration & Time Management</p>
+                <br>
+                <p class="text-[#000080] font-bold">=== PENDIDIKAN ===</p>
+                <p>- S1 Teknik Informatika (2022 - Sekarang)</p>
+            </div>
+            <div class="flex justify-end">
+                <button class="win95-button text-xs" onclick="closeWindow('skillsWin')">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. PROJECTS WINDOW -->
+    <div id="projectsWin" class="window" style="top: 120px; left: 220px; width: 480px; z-index: 4; display: none;" onmousedown="bringToFront('projectsWin')">
+        <div class="window-header" onmousedown="startDrag(event, 'projectsWin')">
+            <span>📁 Portofolio Proyek</span>
+            <div class="window-controls">
+                <button onclick="minimizeWindow('projectsWin')">_</button>
+                <button onclick="maximizeWindow('projectsWin')">🗖</button>
+                <button onclick="closeWindow('projectsWin')">X</button>
+            </div>
+        </div>
+        <div class="p-3 bg-[#c0c0c0] flex flex-col gap-3">
+            <div class="win95-box-inset bg-white p-2 h-60 overflow-y-auto grid grid-cols-2 gap-3">
+                <div class="border border-dashed border-[#808080] p-2 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-sm text-[#000080]">Retro 95 Portfolio</h3>
+                        <p class="text-xs text-[#444] mt-1">Web personal bergaya OS Windows 95 menggunakan HTML/JS murni.</p>
+                    </div>
+                    <span class="text-[10px] text-blue-600 underline cursor-pointer mt-2">Lihat Demo &rarr;</span>
+                </div>
+                <div class="border border-dashed border-[#808080] p-2 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-sm text-[#000080]">E-Commerce Dashboard</h3>
+                        <p class="text-xs text-[#444] mt-1">Aplikasi manajemen toko online modern dengan statistik chart.</p>
+                    </div>
+                    <span class="text-[10px] text-blue-600 underline cursor-pointer mt-2">Lihat Demo &rarr;</span>
+                </div>
+                <div class="border border-dashed border-[#808080] p-2 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-sm text-[#000080]">Weather Forecast App</h3>
+                        <p class="text-xs text-[#444] mt-1">Aplikasi cuaca real-time dengan integrasi API publik.</p>
+                    </div>
+                    <span class="text-[10px] text-blue-600 underline cursor-pointer mt-2">Lihat Demo &rarr;</span>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button class="win95-button text-xs" onclick="closeWindow('projectsWin')">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. NOTEPAD WINDOW -->
+    <div id="notepadWin" class="window" style="top: 70px; left: 300px; width: 420px; z-index: 3; display: none;" onmousedown="bringToFront('notepadWin')">
+        <div class="window-header" onmousedown="startDrag(event, 'notepadWin')">
+            <span>📝 Bio.txt - Notepad</span>
+            <div class="window-controls">
+                <button onclick="minimizeWindow('notepadWin')">_</button>
+                <button onclick="maximizeWindow('notepadWin')">🗖</button>
+                <button onclick="closeWindow('notepadWin')">X</button>
+            </div>
+        </div>
+        <div class="p-2 bg-[#c0c0c0] flex flex-col gap-2">
+            <div class="flex gap-2 text-xs border-b border-gray-400 pb-1">
+                <span class="cursor-pointer hover:bg-blue-800 hover:text-white px-1">File</span>
+                <span class="cursor-pointer hover:bg-blue-800 hover:text-white px-1">Edit</span>
+                <span class="cursor-pointer hover:bg-blue-800 hover:text-white px-1">Search</span>
+                <span class="cursor-pointer hover:bg-blue-800 hover:text-white px-1">Help</span>
+            </div>
+            <textarea class="win95-box-inset w-full h-48 p-2 font-mono text-sm resize-none outline-none">Halo dunia! Selamat datang di catatan pribadi saya. 
+
+Saya adalah seorang pengembang web yang sangat menyukai eksplorasi teknologi kreatif, desain antarmuka retro, serta hal-hal berbau klasik. 
+
+Tujuan saya adalah terus belajar dan menghasilkan karya digital yang fungsional sekaligus menyenangkan untuk digunakan oleh siapa saja!</textarea>
+        </div>
+    </div>
+
+    <!-- 5. MINESWEEPER MINI GAME -->
+    <div id="gameWin" class="window" style="top: 80px; left: 350px; width: 340px; z-index: 2; display: none;" onmousedown="bringToFront('gameWin')">
+        <div class="window-header" onmousedown="startDrag(event, 'gameWin')">
+            <span>💣 Minesweeper Mini</span>
+            <div class="window-controls">
+                <button onclick="minimizeWindow('gameWin')">_</button>
+                <button onclick="closeWindow('gameWin')">X</button>
+            </div>
+        </div>
+        <div class="p-3 bg-[#c0c0c0] flex flex-col items-center gap-3">
+            <div class="win95-box-inset p-2 flex justify-between items-center w-full bg-[#c0c0c0]">
+                <div id="mineCount" class="bg-black text-red-500 font-mono font-bold px-2 py-1 text-lg">010</div>
+                <button class="win95-button text-xl px-2 py-0" onclick="initMinesweeper()">😊</button>
+                <div id="mineTimer" class="bg-black text-red-500 font-mono font-bold px-2 py-1 text-lg">000</div>
+            </div>
+            <div id="mineBoard" class="win95-box-inset grid grid-cols-8 gap-0 bg-[#c0c0c0] p-1">
+                <!-- Dynamically generated cells -->
+            </div>
+            <p class="text-[11px] text-center text-[#222]">Klik kotak untuk membuka. Jangan injak bom!</p>
+        </div>
+    </div>
+
+    <!-- 6. CONTACT / GUESTBOOK WINDOW -->
+    <div id="contactWin" class="window" style="top: 100px; left: 180px; width: 400px; z-index: 1; display: none;" onmousedown="bringToFront('contactWin')">
+        <div class="window-header" onmousedown="startDrag(event, 'contactWin')">
+            <span>✉️ Kirim Pesan - Contact.exe</span>
+            <div class="window-controls">
+                <button onclick="minimizeWindow('contactWin')">_</button>
+                <button onclick="maximizeWindow('contactWin')">🗖</button>
+                <button onclick="closeWindow('contactWin')">X</button>
+            </div>
+        </div>
+        <div class="p-3 bg-[#c0c0c0] flex flex-col gap-3">
+            <form onsubmit="handleContactSubmit(event)" class="flex flex-col gap-2">
+                <label class="text-xs font-bold">Nama Anda:</label>
+                <input type="text" id="senderName" required class="win95-box-inset px-2 py-1 text-sm outline-none">
+                
+                <label class="text-xs font-bold">Alamat Email:</label>
+                <input type="email" id="senderEmail" required class="win95-box-inset px-2 py-1 text-sm outline-none">
+                
+                <label class="text-xs font-bold">Pesan / Komentar:</label>
+                <textarea id="senderMsg" required rows="3" class="win95-box-inset p-2 text-sm resize-none outline-none"></textarea>
+                
+                <div class="flex justify-end gap-2 mt-2">
+                    <button type="submit" class="win95-button text-xs">Kirim Pesan</button>
+                    <button type="button" class="win95-button text-xs" onclick="closeWindow('contactWin')">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+    <!-- Start Menu Popup -->
+    <div id="startMenu" class="start-menu">
+        <div class="flex">
+            <div class="start-sidebar">
+                <span><b>Windows</b>95Portfolio</span>
+            </div>
+            <div class="start-items">
+                <div class="start-item" onclick="openWindow('aboutWin'); toggleStartMenu()">
+                    <span>👤</span> <span>Tentang Saya</span>
+                </div>
+                <div class="start-item" onclick="openWindow('skillsWin'); toggleStartMenu()">
+                    <span>⚙️</span> <span>Daftar Keahlian</span>
+                </div>
+                <div class="start-item" onclick="openWindow('projectsWin'); toggleStartMenu()">
+                    <span>📁</span> <span>Portofolio Proyek</span>
+                </div>
+                <div class="start-item" onclick="openWindow('notepadWin'); toggleStartMenu()">
+                    <span>📝</span> <span>Catatan Bio</span>
+                </div>
+                <div class="start-separator"></div>
+                <div class="start-item" onclick="openWindow('gameWin'); toggleStartMenu()">
+                    <span>💣</span> <span>Minesweeper Game</span>
+                </div>
+                <div class="start-item" onclick="openWindow('contactWin'); toggleStartMenu()">
+                    <span>✉️</span> <span>Kirim Pesan</span>
+                </div>
+                <div class="start-separator"></div>
+                <div class="start-item" onclick="showRestartDialog()">
+                    <span>🔄</span> <span>Restart Sistem</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Taskbar -->
+    <div class="taskbar">
+        <button class="win95-button start-btn" onclick="toggleStartMenu()">
+            <svg width="16" height="16" viewBox="0 0 16 16">
+                <path d="M0 0h7v7H0z" fill="#ff0000"/>
+                <path d="M9 0h7v7H9z" fill="#00ff00"/>
+                <path d="M0 9h7v7H0z" fill="#0000ff"/>
+                <path d="M9 9h7v7H9z" fill="#ffff00"/>
+            </svg>
+            Start
+        </button>
+        <div class="taskbar-divider"></div>
+        <div id="taskbarTabs" class="taskbar-windows">
+            <!-- Dynamic taskbar tabs will appear here -->
+        </div>
+        <div class="system-tray">
+            <span id="clock">00:00</span>
+        </div>
+    </div>
+
+    <script>
+        // Update Live Clock in System Tray
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('clock').innerText = `${hours}:${minutes}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Window Management State
+        let highestZ = 100;
+
+        function bringToFront(winId) {
+            const win = document.getElementById(winId);
+            highestZ++;
+            win.style.zIndex = highestZ;
+        }
+
+        function openWindow(winId) {
+            const win = document.getElementById(winId);
+            win.style.display = 'flex';
+            bringToFront(winId);
+            updateTaskbar();
+        }
+
+        function closeWindow(winId) {
+            const win = document.getElementById(winId);
+            win.style.display = 'none';
+            updateTaskbar();
+        }
+
+        function minimizeWindow(winId) {
+            const win = document.getElementById(winId);
+            win.style.display = 'none';
+            updateTaskbar();
+        }
+
+        function maximizeWindow(winId) {
+            const win = document.getElementById(winId);
+            if (win.style.width === '100vw') {
+                win.style.width = '450px';
+                win.style.height = 'auto';
+                win.style.top = '50px';
+                win.style.left = '80px';
+            } else {
+                win.style.width = '100vw';
+                win.style.height = 'calc(100vh - 40px)';
+                win.style.top = '0';
+                win.style.left = '0';
+            }
+        }
+
+        // Start Menu Toggle
+        function toggleStartMenu() {
+            const menu = document.getElementById('startMenu');
+            menu.classList.toggle('open');
+        }
+
+        window.addEventListener('click', function(e) {
+            const startMenu = document.getElementById('startMenu');
+            const startBtn = document.querySelector('.start-btn');
+            if (!startMenu.contains(e.target) && !startBtn.contains(e.target)) {
+                startMenu.classList.remove('open');
+            }
+        });
+
+        // Update Taskbar Tabs
+        function updateTaskbar() {
+            const tabsContainer = document.getElementById('taskbarTabs');
+            tabsContainer.innerHTML = '';
+            
+            const windows = ['aboutWin', 'skillsWin', 'projectsWin', 'notepadWin', 'gameWin', 'contactWin'];
+            const titles = {
+                'aboutWin': '👤 My Profile',
+                'skillsWin': '⚙️ Skills.txt',
+                'projectsWin': '📁 Projects',
+                'notepadWin': '📝 Bio.txt',
+                'gameWin': '💣 Minesweeper',
+                'contactWin': '✉️ Contact'
+            };
+
+            windows.forEach(winId => {
+                const win = document.getElementById(winId);
+                if (win && win.style.display !== 'none') {
+                    const tab = document.createElement('div');
+                    tab.className = 'taskbar-tab active';
+                    tab.innerText = titles[winId];
+                    tab.onclick = () => {
+                        bringToFront(winId);
+                    };
+                    tabsContainer.appendChild(tab);
+                }
+            });
+        }
+
+        // Draggable Windows Logic
+        let activeWindow = null;
+        let startX = 0, startY = 0;
+
+        function startDrag(e, winId) {
+            activeWindow = document.getElementById(winId);
+            bringToFront(winId);
+            startX = e.clientX - activeWindow.offsetLeft;
+            startY = e.clientY - activeWindow.offsetTop;
+            
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function onDrag(e) {
+            if (!activeWindow) return;
+            let newX = e.clientX - startX;
+            let newY = e.clientY - startY;
+            
+            // Boundary limitations
+            if (newY < 0) newY = 0;
+            
+            activeWindow.style.left = newX + 'px';
+            activeWindow.style.top = newY + 'px';
+        }
+
+        function stopDrag() {
+            activeWindow = null;
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        // Simple Minesweeper Mini Game Logic
+        function initMinesweeper() {
+            const board = document.getElementById('mineBoard');
+            board.innerHTML = '';
+            const rows = 6;
+            const cols = 6;
+            const totalMines = 5;
+            
+            let cells = [];
+            let mines = [];
+
+            // Generate random mines
+            while(mines.length < totalMines) {
+                let r = Math.floor(Math.random() * (rows * cols));
+                if(!mines.includes(r)) mines.push(r);
+            }
+
+            for (let i = 0; i < rows * cols; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'w-7 h-7 bg-[#c0c0c0] border-t-2 border-l-2 border-white border-r-2 border-b-2 border-[#808080] flex items-center justify-center font-bold text-xs cursor-pointer select-none';
+                cell.dataset.index = i;
+                
+                cell.onclick = function() {
+                    if (mines.includes(i)) {
+                        cell.style.backgroundColor = 'red';
+                        cell.innerText = '💣';
+                        alert('Dorr! Anda menginjak bom. Silakan coba lagi.');
+                        initMinesweeper();
+                    } else {
+                        cell.style.border = '1px solid #808080';
+                        cell.style.backgroundColor = '#dfdfdf';
+                        cell.innerText = '✓';
+                    }
+                };
+                board.appendChild(cell);
+            }
+        }
+        initMinesweeper();
+
+        // Contact Form Submission Handler
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('senderName').value;
+            alert(`Terima kasih, ${name}! Pesan Anda telah berhasil dikirim melalui protokol jaringan Windows 95.`);
+            closeWindow('contactWin');
+            document.getElementById('senderName').value = '';
+            document.getElementById('senderEmail').value = '';
+            document.getElementById('senderMsg').value = '';
+        }
+
+        function showRestartDialog() {
+            alert('Sistem sedang melakukan reboot nostalgia... (Website siap digunakan kembali!)');
+            toggleStartMenu();
+        }
+    </script>
+</body>
+</html>
